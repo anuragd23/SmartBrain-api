@@ -5,19 +5,18 @@ const cors = require('cors');
 const knex = require('knex');
 
 
-const postgres = knex({
+const db = knex({
     client: 'pg',
     connection: {
       host : '127.0.0.1',
       user : 'postgres',
-      password : '',
+      password : 'test',
       database : 'smartbrain'
     }
   });
 
-console.log(postgres.select().table('users'));  
 
-const app = express();
+  const app = express();
 
 app.use(express.json());
 app.use(cors());
@@ -77,19 +76,16 @@ app.post('/signin', (req,res) => {
 app.post('/register', (req,res) => {
     const { email, name, password } = req.body;
 
-    bcrypt.hash(password, null, null, function(err, hash) {
-        console.log(`Hash value:` ,hash);
-    });
-
-    database.users.push({
-        id: '125',
+    db('users').returning('*')
+    .insert({
         name: name,
         email: email,
-        entries: 0,
         joined: new Date()
-    });
-
-    res.json(database.users[database.users.length-1]);
+    })
+    .then(user => {
+        res.json(user[0]);
+    })
+    .catch(err => res.status(400).json('unable to register')); 
 });
 
 app.put('/image', (req,res) => {
