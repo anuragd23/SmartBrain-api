@@ -26,6 +26,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.get('/', (req, res) => res.send('It is working!'));
+
+
 app.get('/profile/:id', (req, res) => profile.handleProfileGet(req, res, db));
 
 app.post('/signin', (req, res) => signin.handleSignin(req, res, db, bcrypt));
